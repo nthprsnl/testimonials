@@ -86,6 +86,5 @@ function sendMessage() {
 
         alert('room does not exist!');
     });
-    message = "";
 }
 // nthprsnl, 2023
