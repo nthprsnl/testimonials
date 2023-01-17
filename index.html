@@ -11,13 +11,13 @@
     <h1 style="font-family: comic;">stupid chatroom</h1>
 
     <div class="chat">
-        <div class="controls">
+        <div class="controls" style="height:100%;">
             <input type="text" id="roominput" value="main" placeholder="Room Code">
             <div style="width: 100%;">
                 <button style="flex-grow:1; background-color: #74FF74;" onclick="joinRoom();">Join</button>
                 <button style="background-color: #F74F74;" onclick="createRoom();">Create</button>
             </div>
-            <div style="height: 50%; width:100%; margin-top: 5px; background-color: #ebebeb;"></div>
+            <button onclick="usernameInput()" style="margin-top:5px; width:100%; background-color: #a0cfff;">Change Username</button>
         </div>
         <div class="chats" style>
             <ul class="msgs" id="display-messages">
