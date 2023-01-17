@@ -58,6 +58,7 @@ function joinRoom() {
                 // append the message on the page
                 document.getElementById("display-messages").innerHTML += message;
             });
+            return chat;
         }
 
         alert('room does not exist!');
@@ -85,5 +86,6 @@ function sendMessage() {
 
         alert('room does not exist!');
     });
+    message = "";
 }
 // nthprsnl, 2023
