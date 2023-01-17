@@ -4,9 +4,43 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>testimonials: multipplt</title>
+    <title>testimonials: chagtroom : )</title>
 </head>
 <body>
-    <h1>hello world!</h1>
+    <h1>stupid chatroom</h1>
+
+    <div class="chat">
+        <div>
+            <input type="text" id="roominput" placeholder="Room Code">
+            <button onclick="joinRoom();">Join</button>
+            <button onclick="createRoom();">Create</button>
+        </div>
+        <ul id="display-messages">
+            <li> Welcome to the Chatroom!</li>
+        </ul>
+        <div>
+            <input type="text" id="messageinput" >
+            <button onclick="sendMessage();">Send</button>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtpXFR-l-Zg6s5Vg5buFS6ax0rv4o_iTo",
+            authDomain: "multppl.firebaseapp.com",
+            databaseURL: "https://multppl-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "multppl",
+            storageBucket: "multppl.appspot.com",
+            messagingSenderId: "824961219760",
+            appId: "1:824961219760:web:bfc5ad8ef887f02e078f75"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="app.js"></script>
+    
 </body>
 </html>
