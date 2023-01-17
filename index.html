@@ -5,22 +5,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>testimonials: chagtroom : )</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <h1>stupid chatroom</h1>
+    <h1 style="font-family: comic;">stupid chatroom</h1>
 
     <div class="chat">
-        <div>
-            <input type="text" id="roominput" placeholder="Room Code">
-            <button onclick="joinRoom();">Join</button>
-            <button onclick="createRoom();">Create</button>
+        <div class="controls">
+            <input type="text" id="roominput" value="main" placeholder="Room Code">
+            <div style="width: 100%;">
+                <button style="flex-grow:1; background-color: #74FF74;" onclick="joinRoom();">Join</button>
+                <button style="background-color: #F74F74;" onclick="createRoom();">Create</button>
+            </div>
+            <div style="height: 50%; width:100%; margin-top: 5px; background-color: #ebebeb;"></div>
         </div>
-        <ul id="display-messages">
-            <li> Welcome to the Chatroom!</li>
-        </ul>
-        <div>
-            <input type="text" id="messageinput" >
-            <button onclick="sendMessage();">Send</button>
+        <div class="chats" style>
+            <ul class="msgs" id="display-messages">
+                <li class="system">[SYSTEM]: Welcome to stupid chatroom!</li>
+                <li class="system">[SYSTEM]: Please be nice and treat others how you want to be treated</li>
+                <li class="system">[SYSTEM]: Join on 'main' for the main chatroom!</li>
+                <li class="system">[SYSTEM]: Everything here is unmoderated, so be careful!</li>
+            </ul>
+            <div class="msginput">
+                <input type="text" style="flex-grow:1;" placeholder="Message" value="" id="messageinput" >
+                <button onclick="sendMessage();">Send</button>
+            </div>
         </div>
     </div>
     
@@ -40,7 +49,7 @@
 
         firebase.initializeApp(firebaseConfig);
     </script>
-    <script src="app.js"></script>
+    <script src="app.js">joinRoom('main')</script>
     
 </body>
 </html>
