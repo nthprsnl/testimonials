@@ -1,114 +1,124 @@
+/* eslint-disable no-alert */
+/* global firebase */
+
 const db = firebase.database();
-var username = "", room = "", chat, pid;
+let username = '';
+let roomname = '';
+let chat;
+let userId;
+let currentChatSnapshot;
+const colors = ['red', 'fuchsia', 'lime', 'yellow', 'blue', 'aqua'];
 
 const auth = firebase.auth();
 
-function randomFromArray(array) {
-    return array[Math.floor(Math.random() * array.length)]
-}
+const usernameInput = () => {
+	username = prompt('username:');
 
-function usernameInput() {
-    username = prompt("username:")
-    if (username == "") {alert('username cannot be empty!'); usernameInput();} else {return username}
-}
-auth.signInAnonymously().catch((error) => {
-    var errcode = error.code;
-    var errmsg = error.msg;
+	if (username === '') {
+		alert('username cannot be empty!');
+		username = usernameInput();
+	}
 
-    console.log(errcode, errmsg, error);
-    alert('whoops! something has gone wrong')
-})
-
-colors = ["red", "fuchsia", "lime", "yellow", "blue", "aqua"]
-
-auth.onAuthStateChanged((user) => {
-    console.log(user)
-    if (user) {
-        if (localStorage.getItem('CHTUSR') == undefined) {localStorage.setItem('CHTUSR', usernameInput())}
-        username = localStorage.getItem('CHTUSR')
-        pid = user.uid
-        console.log('user logged in!')
-        db.ref("users/" + pid).set({
-            "name": username,
-            "id": pid,
-            "color": randomFromArray(colors)
-        })
-    }
-})
-
-function createRoom() {
-    if (username == "") {alert('set a username!'); return username = usernameInput()}
-    room = document.getElementById('roominput').value;
-    if (room == "") {alert('room name cannot be empty!'); return}
-    db.ref("rooms/" + room).once("value", snapshot => {
-        if(snapshot.exists()) {
-            alert('room already exists!') ;
-            return true;
-        }
-
-        db.ref("rooms/" + room).set({
-            pid, // this sets owner
-        });
-        console.log("Created room ".concat(room))
-
-    });
+	return username;
 };
 
-function joinRoom() {
-    if (username == "" | typeof username == undefined) {alert('set a username!'); return username = usernameInput()}
-    room = document.getElementById('roominput').value;
-    if (room == "") {alert('room name cannot be empty!'); return}
-    db.ref("rooms/" + room).once("value", snapshot => {
-        if(snapshot.exists()) {
-            chat = db.ref("rooms/" + room + "/messages/")
-        document.getElementById("display-messages").innerHTML = `
-            <li class='system'>[SYSTEM]: Welcome to ${room}!</li>
-            <li class="system">[SYSTEM]: Please be nice and treat others how you want to be treated</li>
-            <li class="system">[SYSTEM]: Join on 'main' for the main chatroom!</li>
-            <li class="system">[SYSTEM]: Everything here is unmoderated, so be careful!</li>
-        `
-        
-            console.log("Joined room ".concat(room))
-            chat.on("child_added", function (snapshot) {
-                const messages = snapshot.val();
-                const message = `<li><abbr title="${messages.pid}" style="color: ${messages.color};">[${messages.username}]</abbr>: ${messages.message}</li>`;
-                // append the message on the page
-                document.getElementById("display-messages").innerHTML += message;
-            });
-            return chat;
-        }
+auth.signInAnonymously().then(({ user }) => {
+	console.log(user);
+	if (user) {
+		if (!localStorage.getItem('chatUsername')) localStorage.setItem('chatUsername', usernameInput());
+		username = localStorage.getItem('chatUsername');
+		userId = user.uid;
+		console.log('user logged in!');
+		db.ref(`users/${userId}`).set({
+			name: username,
+			id: userId,
+			color: colors[Math.floor(Math.random() * colors.length)]
+		});
+	}
+}).catch((error) => {
+	const errcode = error.code;
+	const errmsg = error.msg;
 
-        alert('room does not exist!');
-    });
-    
+	console.log(errcode, errmsg, error);
+	alert('whoops! something has gone wrong. look in devtools for more info!');
+});
+
+const getFromDb = path => new Promise(res => { db.ref(path).once('value', snapshot => res(snapshot)); });
+
+// eslint-disable-next-line no-unused-vars
+const createRoom = async () => {
+	if (username === '') {
+		alert('set a username!');
+		return username = usernameInput();
+	}
+
+	roomname = document.getElementById('roominput').value;
+	if (roomname === '') return alert('room name cannot be empty!');
+	const room = await getFromDb(`rooms/${roomname}`);
+
+	if (room.exists()) return alert('room already exists!');
+
+	// Sets room owner
+	db.ref(`rooms/${roomname}`).set({ userId });
+	console.log('Created room '.concat(room));
 };
 
-function sendMessage() {
+// eslint-disable-next-line no-unused-vars
+const joinRoom = async () => {
+	if (currentChatSnapshot) currentChatSnapshot.off();
 
-    var message, messageinput, timestamp;
-    timestamp = Date.now();
-    messageinput =  document.getElementById("messageinput");
-    message = messageinput.value;
-    
-    document
-    .getElementById("display-messages")
-    .scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+	if (username === '') {
+		alert('set a username!');
+		return username = usernameInput();
+	}
 
-    db.ref("rooms/" + room).once("value", snapshot => {
-        if(snapshot.exists()) {
-            db.ref("users/" + pid).once("value", snapshot => {
-                db.ref("rooms/" + room + "/messages/" + timestamp).set({
-                    username,
-                    message,
-                    pid,
-                    "color": snapshot.val().color
-                })
-            })
-            messageinput.value = ""
-            return;
-        }
+	roomname = document.getElementById('roominput').value;
+	if (roomname === '') return alert('room name cannot be empty!');
 
-        alert('room does not exist!');
-    });
-}
+	const room = await getFromDb(`rooms/${roomname}`);
+	if (!room.exists()) alert('room does not exist!');
+
+	chat = db.ref(`rooms/${roomname}/messages/`);
+	document.getElementById('display-messages').innerHTML = `
+    <li class='system'>[SYSTEM]: Welcome to ${roomname}!</li>
+    <li class="system">[SYSTEM]: Please be nice and treat others how you want to be treated</li>
+    <li class="system">[SYSTEM]: Join on 'main' for the main chatroom!</li>
+    <li class="system">[SYSTEM]: Everything here is unmoderated, so be careful!</li>
+  `;
+
+	console.log(`Joined room ${roomname}`);
+
+	chat.on('child_added', messageSnapshot => {
+		const message = messageSnapshot.val();
+		const messageHtml = `<li><abbr title="${message.userId}" style="color: ${message.color};">[${message.username}]</abbr>: ${message.message}</li>`;
+		document.getElementById('display-messages').innerHTML += messageHtml;
+
+		document
+			.getElementById('display-messages')
+			.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+	});
+
+	currentChatSnapshot = chat;
+};
+
+/* eslint-disable no-unused-vars */
+const sendMessage = async () => {
+	const messageinput = document.getElementById('messageinput');
+	const message = messageinput.value;
+
+	const room = await getFromDb(`rooms/${roomname}`);
+	if (!room.exists()) return alert('room does not exist!');
+	const user = await getFromDb(`users/${userId}`);
+
+	db.ref(`rooms/${roomname}/messages/${Date.now()}`).set({
+		username,
+		message,
+		userId,
+		color: user.val().color
+	});
+
+	messageinput.value = '';
+};
+
 // nthprsnl, 2023
+// celestial, 2023
