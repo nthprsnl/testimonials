@@ -98,8 +98,8 @@ const joinRoom = async () => {
 		document.getElementById('display-messages').innerHTML += messageHtml;
 
 		document
-			.getElementById('display-messages')
-			.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
+            .getElementById('display-messages')
+            .scrollTo(0, document.getElementById('display-messages').scrollHeight, "smooth"); 
 	});
 
 	currentChatSnapshot = chat;
