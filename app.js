@@ -34,9 +34,9 @@ auth.signInAnonymously().then(({ user }) => {
 		userId = user.uid;
 		console.log('user logged in!');
 		db.ref(`users/${userId}`).set({
-			name: username,
-			id: userId,
-			color: currentColor
+			name: DOMPurify.sanitize(username),
+			id: DOMPurify.sanitize(userId),
+			color: DOMPurify.sanitize(currentColor)
 		});
 	}
 }).catch((error) => {
