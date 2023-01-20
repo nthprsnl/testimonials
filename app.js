@@ -7,7 +7,10 @@ let roomname = '';
 let chat;
 let userId;
 let currentChatSnapshot;
+let currentColor;
+
 const colors = ['red', 'fuchsia', 'lime', 'yellow', 'blue', 'aqua'];
+currentColor = colors[Math.floor(Math.random() * colors.length)];
 
 const auth = firebase.auth();
 
@@ -19,7 +22,7 @@ const usernameInput = () => {
 		username = usernameInput();
 	}
 
-	return username;
+	return DOMPurify.sanitize(username);
 };
 
 auth.signInAnonymously().then(({ user }) => {
@@ -32,7 +35,7 @@ auth.signInAnonymously().then(({ user }) => {
 		db.ref(`users/${userId}`).set({
 			name: username,
 			id: userId,
-			color: colors[Math.floor(Math.random() * colors.length)]
+			color: currentColor
 		});
 	}
 }).catch((error) => {
@@ -53,10 +56,10 @@ const createRoom = async () => {
 	}
 
 	roomname = document.getElementById('roominput').value;
-	if (roomname === '') return alert('room name cannot be empty!');
+	if (roomname === '') {alert('room name cannot be empty!'); return};
 	const room = await getFromDb(`rooms/${roomname}`);
 
-	if (room.exists()) return alert('room already exists!');
+	if (room.exists()) {alert('room already exists!'); return};
 
 	// Sets room owner
 	db.ref(`rooms/${roomname}`).set({ userId });
@@ -73,10 +76,10 @@ const joinRoom = async () => {
 	}
 
 	roomname = document.getElementById('roominput').value;
-	if (roomname === '') return alert('room name cannot be empty!');
+	if (roomname === '') {return alert('room name cannot be empty!');}
 
 	const room = await getFromDb(`rooms/${roomname}`);
-	if (!room.exists()) alert('room does not exist!');
+	if (!room.exists()) {alert('room does not exist!'); return};
 
 	chat = db.ref(`rooms/${roomname}/messages/`);
 	document.getElementById('display-messages').innerHTML = `
@@ -95,7 +98,7 @@ const joinRoom = async () => {
 
 		document
 			.getElementById('display-messages')
-			.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+			.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
 	});
 
 	currentChatSnapshot = chat;
@@ -107,18 +110,30 @@ const sendMessage = async () => {
 	const message = messageinput.value;
 
 	const room = await getFromDb(`rooms/${roomname}`);
-	if (!room.exists()) return alert('room does not exist!');
+	if (!room.exists()) {return alert('room does not exist!')};
 	const user = await getFromDb(`users/${userId}`);
 
 	db.ref(`rooms/${roomname}/messages/${Date.now()}`).set({
-		username,
-		message,
-		userId,
-		color: user.val().color
+		username: DOMPurify.sanitize(username),
+		message: DOMPurify.sanitize(message),
+		userId: DOMPurify.sanitize(userId),
+		color: DOMPurify.sanitize(currentColor)
 	});
 
 	messageinput.value = '';
 };
+
+db.ref(`rooms/messages/`).on('child_added', messageSnapshot => {
+    const message = messageSnapshot.val();
+    const messageHtml = `<li><abbr title="${message.userId}" style="color: ${message.color};">[${message.username}]</abbr>: ${message.message}</li>`;
+    document.getElementById('display-messages').innerHTML += messageHtml;
+
+    document
+        .getElementById('display-messages')
+        .scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
+});
+
+currentChatSnapshot = chat;
 
 // nthprsnl, 2023
 // celestial, 2023

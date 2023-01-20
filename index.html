@@ -28,7 +28,7 @@
             </ul>
             <div class="msginput">
                 <input type="text" style="flex-grow:1;" placeholder="Message" value="" id="messageinput" >
-                <button onclick="sendMessage();">Send</button>
+                <input type="submit" onclick="sendMessage();" onsubmit="sendMessage();" value="Send">
             </div>
         </div>
     </div>
@@ -36,6 +36,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js" integrity="sha512-3dcbndbDLLWfKWevQu8C/1qVRcxx6h+eRDSnn3/pcBZHISRJgsj3u71U/Ad6nQVHrEi05hOSr6Hnb/p0pWc94w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAtpXFR-l-Zg6s5Vg5buFS6ax0rv4o_iTo",
