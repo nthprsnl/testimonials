@@ -81,7 +81,7 @@ const joinRoom = async () => {
 	roomname = document.getElementById('roominput').value;
 	if (roomname === '') {return alert('room name cannot be empty!');}
 	if (roomname === lastChat) {return alert('you cannot join the same room twice!');}
-	
+
 	const room = await getFromDb(`rooms/${roomname}`);
 	if (!room.exists()) {alert('room does not exist!'); return};
 
@@ -129,7 +129,7 @@ const sendMessage = async () => {
 
 db.ref(`rooms/messages/`).on('child_added', messageSnapshot => {
     const message = messageSnapshot.val();
-    const messageHtml = `<li><abbr title="${message.userId}" style="color: ${message.color};">[${message.username}]</abbr>: ${message.message}</li>`;
+    const messageHtml = `<li><abbr title="${DOMPurify.sanitize(message.userId)}" style="color: ${DOMPurify.sanitize(message.color)};">[${DOMPurify.sanitize(message.username)}]</abbr>: ${DOMPurify.sanitize(message.message)}</li>`;
     document.getElementById('display-messages').innerHTML += messageHtml;
 
     document
@@ -140,7 +140,7 @@ db.ref(`rooms/messages/`).on('child_added', messageSnapshot => {
 db.ref(`rooms/`).on('child_added', messageSnapshot => {
     const message = messageSnapshot.val();
 	console.log(message)
-    const messageHtml = `<div class="roomitem"><h2 class="roomtext"><abbr title="${message.roomname}">${message.roomname}</abbr></h2></div>`;
+    const messageHtml = `<div class="roomitem"><h2 onclick="document.getElementById('roominput').value = ${message.roomname}; joinRoom();" class="roomtext"><abbr title="${message.roomname}">${message.roomname}</abbr></h2></div>`;
     document.getElementById('roomitems').innerHTML += messageHtml;
 });
 
