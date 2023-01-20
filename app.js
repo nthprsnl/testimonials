@@ -94,7 +94,7 @@ const joinRoom = async () => {
 
 	chat.on('child_added', messageSnapshot => {
 		const message = messageSnapshot.val();
-		const messageHtml = `<li><abbr title="${message.userId}" style="color: ${message.color};">[${message.username}]</abbr>: ${message.message}</li>`;
+		const messageHtml = `<li><abbr title="${DOMPurify.sanitize(message.userId)}" style="color: ${DOMPurify.sanitize(message.color)};">[${DOMPurify.sanitize(message.username)}]</abbr>: ${DOMPurify.sanitize(message.message)}</li>`;
 		document.getElementById('display-messages').innerHTML += messageHtml;
 
 		document
