@@ -139,8 +139,7 @@ db.ref(`rooms/messages/`).on('child_added', messageSnapshot => {
 
 db.ref(`rooms/`).on('child_added', messageSnapshot => {
     const message = messageSnapshot.val();
-	console.log(message)
-    const messageHtml = `<div class="roomitem"><h2 onclick="document.getElementById('roominput').value = "${message.roomname}"; joinRoom();" class="roomtext"><abbr title="${message.roomname}">${message.roomname}</abbr></h2></div>`;
+    const messageHtml = `<div class="roomitem"><h2 style="cursor:pointer;" onclick="document.getElementById('roominput').value = '${message.roomname}'; joinRoom();" class="roomtext"><abbr title="${message.roomname}">${message.roomname}</abbr></h2></div>`;
     document.getElementById('roomitems').innerHTML += messageHtml;
 });
 
