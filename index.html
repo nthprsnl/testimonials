@@ -10,7 +10,7 @@
 <body style="overflow-y:hidden;">
     <h1 style="font-family: comic;">stupid chatroom</h1>
 
-    <div class="chat">
+    <div class="chat" style="height: 70vh;">
         <div class="controls" style="height:100%;">
             <input type="text" id="roominput" value="main" placeholder="Room Code">
             <div style="width: 100%;">
@@ -18,6 +18,12 @@
                 <button style="background-color: #F74F74;" onclick="createRoom();">Create</button>
             </div>
             <button onclick="usernameInput()" style="margin-top:5px; width:100%; background-color: #a0cfff;">Change Username</button>
+            <hr>
+            <div style="width: 9.1em; overflow-y: scroll; overflow-x: hidden; display: flex; flex-direction: column;">
+                <h1 style="margin-top: 0px; margin-bottom: 0px;">rooms</h1>
+                <div class="roomitems" id="roomitems" style="height: 50vh">
+                </div>
+            </div>
         </div>
         <div class="chats" style>
             <ul class="msgs" id="display-messages">
@@ -39,7 +45,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js" integrity="sha512-3dcbndbDLLWfKWevQu8C/1qVRcxx6h+eRDSnn3/pcBZHISRJgsj3u71U/Ad6nQVHrEi05hOSr6Hnb/p0pWc94w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script>
+    <script id="doom">
         const firebaseConfig = {
             apiKey: "AIzaSyAtpXFR-l-Zg6s5Vg5buFS6ax0rv4o_iTo",
             authDomain: "multppl.firebaseapp.com",

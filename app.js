@@ -8,6 +8,7 @@ let chat;
 let userId;
 let currentChatSnapshot;
 let currentColor;
+let lastChat;
 
 const colors = ['red', 'fuchsia', 'lime', 'yellow', 'blue', 'aqua'];
 currentColor = colors[Math.floor(Math.random() * colors.length)];
@@ -62,8 +63,9 @@ const createRoom = async () => {
 	if (room.exists()) {alert('room already exists!'); return};
 
 	// Sets room owner
-	db.ref(`rooms/${roomname}`).set({ userId });
+	db.ref(`rooms/${roomname}`).set({ userId, roomname});
 	console.log('Created room '.concat(room));
+	joinRoom();
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -78,7 +80,8 @@ const joinRoom = async () => {
 
 	roomname = document.getElementById('roominput').value;
 	if (roomname === '') {return alert('room name cannot be empty!');}
-
+	if (roomname === lastChat) {return alert('you cannot join the same room twice!');}
+	
 	const room = await getFromDb(`rooms/${roomname}`);
 	if (!room.exists()) {alert('room does not exist!'); return};
 
@@ -91,7 +94,7 @@ const joinRoom = async () => {
   `;
 
 	console.log(`Joined room ${roomname}`);
-
+	lastChat = roomname
 	chat.on('child_added', messageSnapshot => {
 		const message = messageSnapshot.val();
 		const messageHtml = `<li><abbr title="${DOMPurify.sanitize(message.userId)}" style="color: ${DOMPurify.sanitize(message.color)};">[${DOMPurify.sanitize(message.username)}]</abbr>: ${DOMPurify.sanitize(message.message)}</li>`;
@@ -134,7 +137,14 @@ db.ref(`rooms/messages/`).on('child_added', messageSnapshot => {
         .scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' });
 });
 
-currentChatSnapshot = chat;
+db.ref(`rooms/`).on('child_added', messageSnapshot => {
+    const message = messageSnapshot.val();
+	console.log(message)
+    const messageHtml = `<div class="roomitem"><h2 class="roomtext"><abbr title="${message.roomname}">${message.roomname}</abbr></h2></div>`;
+    document.getElementById('roomitems').innerHTML += messageHtml;
+});
+
+currentChatSnapshot = db.ref(`rooms/messages/`);
 
 // nthprsnl, 2023
 // celestial, 2023

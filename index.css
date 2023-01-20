@@ -58,6 +58,20 @@ body {
     mask-repeat: no-repeat, no-repeat;
 }
 
+.roomitem {
+    background-color:#a0cfff;
+    margin: 0;
+    display:inline-block;
+    width: 8em;
+}
+.roomtext {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: block; /* or in-line block according to your requirement */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 .controls > div{
     margin-top: 5px;
     display: flex;
