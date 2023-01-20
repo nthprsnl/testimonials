@@ -68,6 +68,7 @@ const createRoom = async () => {
 
 // eslint-disable-next-line no-unused-vars
 const joinRoom = async () => {
+    document.getElementById('msginput').style.display = block;
 	if (currentChatSnapshot) currentChatSnapshot.off();
 
 	if (username === '') {
