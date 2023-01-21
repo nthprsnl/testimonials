@@ -9,6 +9,7 @@ let userId;
 let currentChatSnapshot;
 let currentColor;
 let lastChat;
+let currentUsers;
 
 const colors = ['red', 'fuchsia', 'lime', 'yellow', 'blue', 'aqua'];
 currentColor = colors[Math.floor(Math.random() * colors.length)];
@@ -26,8 +27,9 @@ const usernameInput = () => {
 	return DOMPurify.sanitize(username);
 };
 
+const getFromDb = path => new Promise(res => { db.ref(path).once('value', snapshot => res(snapshot)); });
+
 auth.signInAnonymously().then(({ user }) => {
-	console.log(user);
 	if (user) {
 		if (!localStorage.getItem('chatUsername')) localStorage.setItem('chatUsername', usernameInput());
 		username = localStorage.getItem('chatUsername');
@@ -38,7 +40,8 @@ auth.signInAnonymously().then(({ user }) => {
 			id: DOMPurify.sanitize(userId),
 			color: DOMPurify.sanitize(currentColor)
 		});
-	}
+		db.ref(`users/${userId}`).onDisconnect().remove()
+	} 
 }).catch((error) => {
 	const errcode = error.code;
 	const errmsg = error.msg;
@@ -46,8 +49,6 @@ auth.signInAnonymously().then(({ user }) => {
 	console.log(errcode, errmsg, error);
 	alert('whoops! something has gone wrong. look in devtools for more info!');
 });
-
-const getFromDb = path => new Promise(res => { db.ref(path).once('value', snapshot => res(snapshot)); });
 
 // eslint-disable-next-line no-unused-vars
 const createRoom = async () => {
@@ -144,6 +145,12 @@ db.ref(`rooms/`).on('child_added', messageSnapshot => {
 });
 
 currentChatSnapshot = db.ref(`rooms/messages/`);
+
+// this is a really bad makeshift but itll do
+db.ref("/users").once('value', snapshot => {document.getElementById('usercount').innerHTML = Object.keys(snapshot.val()).length})
+setInterval(function () {
+	db.ref("/users").once('value', snapshot => {document.getElementById('usercount').innerHTML = Object.keys(snapshot.val()).length})
+}, 15000);
 
 // nthprsnl, 2023
 // celestial, 2023
